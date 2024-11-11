@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    margin:0;
+    padding:0;
+}
+.form-control{
+    width: 100%;
+    border: solid 1px rgba(0, 0, 0, 0.5);
+   resize: none;
+    padding: 5px;
+    margin: 5px;
+}
+.btn{
+    background-color: #f1faf1;
+    padding: 10px 20px;
+    border-radius: 50px;
+    margin: 5px;
+    border: none;
+    display: block;
+}
+.line{
+    display: block;
+    border: 0;
+    height: 2px;
+    background-color: brown;
+    width: 100vw;
+}
+/*form animation*/
+/* globals.css */
+
+/* Initial hidden state for form */
+.form-container {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Visible state when form is displayed */
+.form-enter {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Exit state when form is hidden */
+.form-exit {
+    opacity: 0;
+    transform: translateY(-10px);
+}
