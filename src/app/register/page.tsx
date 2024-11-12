@@ -1,4 +1,4 @@
-"use client"; // Ensure this is present for client-side rendering
+"use client"; 
 import React from "react";
 import Container from "@mui/material/Container";
 import {Paper,TextField,Button, Select, MenuItem,InputLabel,FormControl,FormHelperText,} from "@mui/material";
@@ -123,21 +123,19 @@ export default function Register() {
             <Select
               labelId="gender-label"
               id="gender"
+              name="gender"
               value={formik.values.gender}
               onChange={formik.handleChange}
               label="Gender"
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value="male">Male</MenuItem>
               <MenuItem value="female">Female</MenuItem>
-              <MenuItem value="other">Other</MenuItem>
             </Select>
             <FormHelperText>
               {formik.touched.gender && formik.errors.gender}
             </FormHelperText>
           </FormControl>
+
           <Button
             type="submit"
             sx={{

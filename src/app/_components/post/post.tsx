@@ -107,9 +107,9 @@ export default function Post({
       {postObj.image && (
         <CardMedia
           component="img"
-          height="150"
           image={postObj.image}
           alt={postObj.body}
+          sx={{ width: "100%" }} // Using sx for full width
         />
       )}
       <CardContent>
@@ -156,10 +156,15 @@ export default function Post({
             />
           </Avatar>
           <Box>
-            <Typography variant="subtitle2" sx={{ paddingX:'10px' ,fontWeight: "bold" }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ paddingX: "10px", fontWeight: "bold" }}
+            >
               {c.commentCreator?.name || "Anonymous"}
             </Typography>
-            <Typography sx={{paddingX:'10px'}} variant="body2">{c.content}</Typography>
+            <Typography sx={{ paddingX: "10px" }} variant="body2">
+              {c.content}
+            </Typography>
           </Box>
         </Box>
       ))}

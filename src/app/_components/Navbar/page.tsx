@@ -71,7 +71,7 @@ const userLoading = useAppSelector((state) => state.posts.isLoading);
             sx={{ display: "flex", alignItems: "center" }}
           >
             <Link href="/" passHref>
-              <IconButton color="inherit">
+              <IconButton sx={{color:'white'}}>
                 <Instagram />
               </IconButton>
             </Link>
