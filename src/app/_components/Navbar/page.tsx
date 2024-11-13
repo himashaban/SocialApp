@@ -45,9 +45,9 @@ const userLoading = useAppSelector((state) => state.posts.isLoading);
 
   const logoutUser = () => {
     dispatch(clearData());
-    
+     router.push("/login");
     handleMenuClose();
-    router.push("/login");
+   
   };
 
   React.useEffect(() => {
@@ -71,7 +71,7 @@ const userLoading = useAppSelector((state) => state.posts.isLoading);
             sx={{ display: "flex", alignItems: "center" }}
           >
             <Link href="/" passHref>
-              <IconButton sx={{color:'white'}}>
+              <IconButton sx={{ color: "white" }}>
                 <Instagram />
               </IconButton>
             </Link>
@@ -85,9 +85,13 @@ const userLoading = useAppSelector((state) => state.posts.isLoading);
               (userLoading ? (
                 <Typography variant="body1">Loading...</Typography>
               ) : (
-                <Typography variant="body1">
+                <Link
+                  href="/profile"
+                  passHref
+                  style={{ color: "white", textDecoration: "none" }}
+                >
                   {userinfo?.name || "User"}
-                </Typography>
+                </Link>
               ))}
           </Box>
 

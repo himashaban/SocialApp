@@ -220,7 +220,7 @@ const postSlice = createSlice({
       showNotification({ title: "post deleted successfully" });
     });
     builder.addCase(deleteComment.fulfilled, (state, action) => {
-      console.log(action.payload);
+      console.log('response is ',action.payload);
       showNotification({ title: "comment deleted successfully" });
     });
     builder.addCase(deleteComment.rejected, (state, action) => {

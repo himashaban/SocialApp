@@ -16,11 +16,11 @@ import { commentType, postType } from "@/app/_interfaces/home";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import TextField from "@mui/material/TextField";
-import { Box, Menu, MenuItem } from "@mui/material";
+import { Box, Button, Menu, MenuItem } from "@mui/material";
 import myImg from "../../../assets/peep.png";
-import { AddComments, deletePost } from "@/lib/postSlice";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { AddComments, deletePost, deleteComment } from "@/lib/postSlice";
 import { useAppDispatch } from "@/lib/store";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function UserPage({
   postObj,
@@ -32,6 +32,7 @@ export default function UserPage({
   const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<commentType[]>(postObj.comments);
   const [anchorE1, setAnchorE1] = useState<null | HTMLElement>(null);
+  const [showAllComments, setShowAllComments] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -41,13 +42,12 @@ export default function UserPage({
 
   const handelCloseMenue = () => {
     setAnchorE1(null);
+    console.log(allComments);
+    
   };
 
   const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
-      console.log("Enter key pressed!");
-      console.log("Comment:", comment);
-      console.log("Post ID:", postObj._id);
       setComment(""); // Clear input after submission
 
       dispatch(AddComments({ comment, postid: postObj._id })).then((res) => {
@@ -64,12 +64,14 @@ export default function UserPage({
   function handelProfileImage(imgsrc: string) {
     const myallKeywords = imgsrc.split("/");
     const lastKeyWord = myallKeywords[myallKeywords.length - 1];
-    // Check if the imgsrc is a StaticImageData or a string URL
     if (lastKeyWord === "undefined" || typeof imgsrc === "object") {
-      // Return a fallback image URL (string)
-      return myImg; // myImg should be a string URL, not StaticImageData
+      return myImg;
     }
     return imgsrc;
+  }
+
+  function deletePostComment(id: string) {
+    dispatch(deleteComment(id));
   }
 
   function handelNavigate(id: string) {
@@ -119,7 +121,12 @@ export default function UserPage({
               onClose={handelCloseMenue}
               sx={{ padding: "0" }}
             >
-              <MenuItem>
+              <MenuItem
+                onClick={() => {
+                  deleteSelectedPost(postObj._id);
+                  handelCloseMenue();
+                }}
+              >
                 <DeleteIcon sx={{ color: "red" }} /> delete post
               </MenuItem>
             </Menu>
@@ -138,9 +145,9 @@ export default function UserPage({
       />
       {postObj.image && (
         <CardMedia
-          sx={{ backgroundColor: "#F1FAF1", padding: "8px" }}
+          sx={{ backgroundColor: "#F1FAF1", padding: "8px",width:'100%' }}
           component="img"
-          height="50"
+         
           image={postObj.image}
           alt={postObj.body}
         />
@@ -182,106 +189,97 @@ export default function UserPage({
       </CardActions>
 
       {/* Comments Section */}
-      {postObj.comments.length > 0 && !allComments ? (
+      {comments.length > 0 && (
         <Box
           sx={{
-            backgroundColor: "#F8C8C6",
-            borderRadius: "50px",
-            height: "auto",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "12px",
+            padding: "16px",
           }}
         >
-          <CardHeader
-            avatar={
-              <Avatar
-                sx={{ bgcolor: red[500], cursor: "pointer" }}
-                aria-label={postObj.comments[0].commentCreator?.name}
+          {(showAllComments ? comments : comments.slice(0, 1)).map(
+            (comment) => (
+              <Box
+                key={comment._id}
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  padding: "12px",
+                  marginY: "8px",
+                  backgroundColor: "#ffffff",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                }}
               >
-                <Image
-                  src={handelProfileImage(
-                    postObj.comments[0].commentCreator?.photo || ""
-                  )} // Now returns a valid string URL
-                  alt={
-                    postObj.comments[0].commentCreator?.name || "User Avatar"
-                  }
-                  width={50}
-                  height={50}
-                />
-              </Avatar>
-            }
-            title={postObj.comments[0].commentCreator.name}
-            subheader={new Date(
-              postObj.comments[0].createdAt
-            ).toLocaleDateString()}
-            subheaderTypographyProps={{ sx: { gap: "12px" } }}
-            titleTypographyProps={{
-              sx: { width: "fit-content", cursor: "pointer" },
-            }}
-            onClick={() =>
-              handelNavigate(postObj.comments[0].commentCreator._id)
-            }
-          />
-          <CardContent>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.secondary",
-                padding: "0px",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              {postObj.comments[0].content}
-            </Typography>
-          </CardContent>
-        </Box>
-      ) : (
-        postObj.comments?.map((comment) => (
-          <Box
-            className="rounded-full"
-            key={comment._id}
-            sx={{ backgroundColor: "gray" }}
-          >
-            <CardHeader
-              avatar={
                 <Avatar
-                  sx={{ bgcolor: red[500], cursor: "pointer" }}
+                  sx={{
+                    bgcolor: red[500],
+                    cursor: "pointer",
+                    width: 48,
+                    height: 48,
+                    marginRight: "16px",
+                  }}
                   aria-label={comment.commentCreator.name}
-                  onClick={() => handelNavigate(comment.commentCreator._id)}
                 >
                   <Image
                     src={handelProfileImage(comment.commentCreator.photo)}
                     alt={comment.commentCreator.name}
-                    width={50}
-                    height={50}
+                    width={48}
+                    height={48}
                   />
                 </Avatar>
-              }
-              title={comment.commentCreator.name}
-              subheader={new Date(comment.createdAt).toLocaleDateString()}
-              subheaderTypographyProps={{ sx: { gap: "12px" } }}
-              titleTypographyProps={{
-                sx: { width: "fit-content", cursor: "pointer" },
-              }}
-              onClick={() => {
-                deleteSelectedPost(comment._id);
-                handelCloseMenue();
-              }}
-            />
-            <CardContent>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "text.secondary",
-                  display: "flex",
-                  justifyContent: "center",
-                  justifyItems: "center",
-                }}
-              >
-                {comment.content}
-              </Typography>
-            </CardContent>
-          </Box>
-        ))
+                <Box sx={{ flexGrow: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: "bold", cursor: "pointer" }}
+                    >
+                      {comment.commentCreator.name}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "text.secondary", marginLeft: "8px" }}
+                    >
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </Typography>
+                    <IconButton
+                      onClick={() => deletePostComment(comment._id)}
+                      sx={{ marginLeft: "auto" }}
+                    >
+                      <DeleteIcon sx={{ color: "red", fontSize: 20 }} />
+                    </IconButton>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {comment.content}
+                  </Typography>
+                </Box>
+              </Box>
+            )
+          )}
+          <Button
+            onClick={() => setShowAllComments((prev) => !prev)}
+            sx={{
+              display: "block",
+              margin: "12px auto 0",
+              textTransform: "capitalize",
+              color: "#1976d2",
+            }}
+          >
+            {showAllComments ? "Show Less" : `Show More (${comments.length})`}
+          </Button>
+        </Box>
       )}
     </Card>
   );

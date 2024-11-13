@@ -1,7 +1,16 @@
-"use client"; 
+"use client";
 import React from "react";
 import Container from "@mui/material/Container";
-import {Paper,TextField,Button, Select, MenuItem,InputLabel,FormControl,FormHelperText,} from "@mui/material";
+import {
+  Paper,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  FormHelperText,
+} from "@mui/material";
 import { useFormik } from "formik";
 import { userRegister } from "@/lib/authSlice";
 import { useDispatch } from "react-redux";
@@ -30,6 +39,12 @@ export default function Register() {
         .required("Email is required"),
       password: Yup.string()
         .min(6, "Password must be at least 6 characters")
+        .matches(/[A-Z]/, "Password must contain at least one uppercase letter") // At least one capital letter
+        .matches(/\d/, "Password must contain at least one number") // At least one number
+        .matches(
+          /[@$!%*?&]/,
+          "Password must contain at least one special character"
+        ) // At least one symbol
         .required("Password is required"),
       rePassword: Yup.string() // Keep this as rePassword
         .oneOf([Yup.ref("password")], "Passwords must match")
@@ -37,19 +52,36 @@ export default function Register() {
       dateOfBirth: Yup.date().required("Date of birth is required"),
       gender: Yup.string().required("Gender is required"),
     }),
-    onSubmit: async (values) => {
-      try {
-        const res = await dispatch(userRegister(values)); // Ensure userRegister returns a promise
-        if (res.payload.message === "success") {
-          toast.success("Registration successful! 🎉");
-          router.push("/login"); // Redirect to login after successful registration
-        } else {
-          toast.error(res.payload);
-        }
-      } catch (err) {
-        console.error("Registration error:", err);
-        toast.error("Registration failed. Please try again.");
-      }
+    // onSubmit: async (values) => {
+    //   try {
+    //     const res = await dispatch(userRegister(values)); // Ensure userRegister returns a message
+    //     if (res.payload?.message === "success") {
+    //       toast.success("Registration successful! 🎉");
+    //       router.push("/login"); // Redirect to login after successful registration
+    //     } else {
+    //       toast.error(res.payload?.error || "Something went wrong!");
+    //     }
+    //   } catch (err) {
+    //     console.error("Registration error:", err);
+    //     toast.error("Registration failed. Please try again.");
+    //   }
+    // },
+    onSubmit: (values) => {
+      dispatch(userRegister(values))
+        .then((res) => {
+          if (res.payload.message === "success") {
+            toast.success("Registration successful! 🎉");
+                 router.push("/login");
+
+            // Wait until userinfo is populated before showing the toast
+            // Check every 100ms
+          } else {
+            toast.error("Login failed. Please try again.");
+          }
+        })
+        .catch(() => {
+          toast.error("An unexpected error occurred.");
+        });
     },
   });
 
